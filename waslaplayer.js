@@ -80,8 +80,7 @@ function buildQualityMenu(videoId, shakaPlayer) {
         menu.appendChild(el);
       });
 
-    // إخفاء الزر لو جودة واحدة بس
-    qWrap.style.display = (menu.querySelectorAll('span').length > 2) ? '' : 'none';
+    qWrap.style.display = (menu.querySelectorAll('span').length > 1) ? '' : 'none';
   }
 
   if (shakaPlayer) {
@@ -93,7 +92,7 @@ function buildQualityMenu(videoId, shakaPlayer) {
   }
 }
 
-/* buildQualityMenuHls - قائمة الجودات لبثوث HLS */
+/* buildQualityMenuHls - قائمة الجودات لبثوث HLS باستخدام hls.js */
 function buildQualityMenuHls(videoId, hls) {
   var wrapper = document.getElementById('fluid_video_wrapper_' + videoId);
   if (!wrapper) return;
@@ -129,6 +128,13 @@ function buildQualityMenuHls(videoId, hls) {
     el.classList.add('wasla-active');
   }
 
+  function getLevelLabel(level) {
+    // استخدم height لو موجود، وإلا استخدم bitrate بالـ kbps
+    if (level.height && level.height > 0) return level.height + 'p';
+    if (level.bitrate && level.bitrate > 0) return Math.round(level.bitrate / 1000) + 'k';
+    return 'Level ' + level.index;
+  }
+
   function buildItems() {
     menu.innerHTML = '';
 
@@ -138,41 +144,50 @@ function buildQualityMenuHls(videoId, hls) {
     autoEl.className = 'wasla-active';
     autoEl.addEventListener('click', function(e) {
       e.stopPropagation();
-      hls.currentLevel = -1;  // -1 = ABR تلقائي
+      hls.currentLevel = -1;
       setActive(autoEl);
       menu.classList.remove('wasla-open');
     });
     menu.appendChild(autoEl);
 
-    // مستويات الجودة من hls.levels
-    var seen = {};
-    hls.levels
-      .map(function(l, i) { return { height: l.height, index: i }; })
-      .filter(function(l) { return l.height; })
-      .sort(function(a, b) { return b.height - a.height; })
-      .forEach(function(l) {
-        if (seen[l.height]) return;
-        seen[l.height] = true;
-        var el = document.createElement('span');
-        el.textContent = l.height + 'p';
-        (function(levelIndex, elem) {
-          elem.addEventListener('click', function(e) {
-            e.stopPropagation();
-            hls.currentLevel = levelIndex;  // تثبيت الجودة
-            setActive(elem);
-            menu.classList.remove('wasla-open');
-          });
-        })(l.index, el);
-        menu.appendChild(el);
-      });
+    // مستويات الجودة — مرتبة من الأعلى للأقل
+    var levels = hls.levels.map(function(l, i) {
+      return { height: l.height || 0, bitrate: l.bitrate || 0, index: i };
+    });
 
-    // إخفاء الزر لو جودة واحدة بس
-    qWrap.style.display = (menu.querySelectorAll('span').length > 2) ? '' : 'none';
+    // ترتيب: لو عندنا height نرتب بيه، وإلا نرتب بالـ bitrate
+    var hasHeight = levels.some(function(l) { return l.height > 0; });
+    levels.sort(function(a, b) {
+      return hasHeight ? (b.height - a.height) : (b.bitrate - a.bitrate);
+    });
+
+    // إزالة التكرار
+    var seen = {};
+    levels.forEach(function(l) {
+      var key = hasHeight ? l.height : l.bitrate;
+      if (seen[key]) return;
+      seen[key] = true;
+
+      var el = document.createElement('span');
+      el.textContent = getLevelLabel(l);
+      (function(levelIndex, elem) {
+        elem.addEventListener('click', function(e) {
+          e.stopPropagation();
+          hls.currentLevel = levelIndex;
+          setActive(elem);
+          menu.classList.remove('wasla-open');
+        });
+      })(l.index, el);
+      menu.appendChild(el);
+    });
+
+    // إظهار الزر فقط لو في أكثر من جودة واحدة (auto + 1 على الأقل)
+    qWrap.style.display = (menu.querySelectorAll('span').length > 1) ? '' : 'none';
   }
 
   buildItems();
 
-  // تحديث القائمة لو تغيرت المستويات لاحقًا
+  // إعادة البناء لو تغيرت المستويات
   hls.on(Hls.Events.LEVEL_LOADED, function() {
     if (hls.levels.length !== menu.querySelectorAll('span').length - 1) {
       buildItems();
@@ -205,19 +220,19 @@ function startStream(videoId, src, clearkey) {
 
   } else {
     // ---- HLS (m3u8) ----
-    // نبدّأ waslaPlayer للـ UI فقط (بدون source element لمنع تضارب مع HLS داخلي)
+    // نشغّل waslaPlayer للـ UI بس — بدون source type لمنع تضارب مع HLS
     waslaPlayer(videoId, {
       layoutControls: { autoPlay: false, allowTheatre: true, fillToContainer: true }
     });
 
-    function initHlsDirect() {
+    var initHlsDirect = function() {
       if (!Hls.isSupported()) {
-        // Fallback للمتصفحات اللي بتدعم HLS أصلاً (Safari)
+        // Fallback للمتصفحات اللي بتدعم HLS أصلاً زي Safari
         video.src = src;
         video.play().catch(function() {});
         return;
       }
-      var hls = new Hls({ startLevel: -1 });  // startLevel: -1 = تلقائي
+      var hls = new Hls({ startLevel: -1, debug: false });
       hls.loadSource(src);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
@@ -229,12 +244,12 @@ function startStream(videoId, src, clearkey) {
           console.error('[WaslaPlayer] HLS fatal error:', data.type, data.details);
         }
       });
-    }
+    };
 
     if (typeof Hls !== 'undefined') {
       initHlsDirect();
     } else {
-      // تحميل hls.js لو لم يكن محملاً
+      // تحميل hls.js ديناميكيًا لو مش محمّل
       var script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
       script.onload = initHlsDirect;
