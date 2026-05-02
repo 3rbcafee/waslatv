@@ -4,6 +4,11 @@ var waslaPlayerScriptLocation=function(){var e,t,i="";return document.currentScr
    WaslaPlayer - Quality Menu & Stream Launcher
    ============================================================ */
 
+
+/* ============================================================
+   WaslaPlayer - Quality Menu & Stream Launcher
+   ============================================================ */
+
 function buildQualityMenu(videoId, shakaPlayer) {
   var wrapper = document.getElementById('fluid_video_wrapper_' + videoId);
   if (!wrapper) return;
@@ -88,12 +93,100 @@ function buildQualityMenu(videoId, shakaPlayer) {
   }
 }
 
+/* buildQualityMenuHls - قائمة الجودات لبثوث HLS */
+function buildQualityMenuHls(videoId, hls) {
+  var wrapper = document.getElementById('fluid_video_wrapper_' + videoId);
+  if (!wrapper) return;
+  var controlsRight = wrapper.querySelector('.fluid_controls_right');
+  if (!controlsRight) return;
+  if (document.getElementById(videoId + '_wasla_quality_wrap')) return;
+
+  var qWrap = document.createElement('div');
+  qWrap.className = 'wasla-quality-wrapper';
+  qWrap.id = videoId + '_wasla_quality_wrap';
+
+  var btn = document.createElement('div');
+  btn.className = 'wasla-quality-btn';
+  btn.title = 'جودة البث';
+
+  var menu = document.createElement('div');
+  menu.className = 'wasla-quality-menu';
+
+  qWrap.appendChild(menu);
+  qWrap.appendChild(btn);
+  controlsRight.insertBefore(qWrap, controlsRight.firstChild);
+
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    menu.classList.toggle('wasla-open');
+  });
+  document.addEventListener('click', function() {
+    menu.classList.remove('wasla-open');
+  });
+
+  function setActive(el) {
+    menu.querySelectorAll('span').forEach(function(s) { s.classList.remove('wasla-active'); });
+    el.classList.add('wasla-active');
+  }
+
+  function buildItems() {
+    menu.innerHTML = '';
+
+    // خيار تلقائي
+    var autoEl = document.createElement('span');
+    autoEl.textContent = 'تلقائي';
+    autoEl.className = 'wasla-active';
+    autoEl.addEventListener('click', function(e) {
+      e.stopPropagation();
+      hls.currentLevel = -1;  // -1 = ABR تلقائي
+      setActive(autoEl);
+      menu.classList.remove('wasla-open');
+    });
+    menu.appendChild(autoEl);
+
+    // مستويات الجودة من hls.levels
+    var seen = {};
+    hls.levels
+      .map(function(l, i) { return { height: l.height, index: i }; })
+      .filter(function(l) { return l.height; })
+      .sort(function(a, b) { return b.height - a.height; })
+      .forEach(function(l) {
+        if (seen[l.height]) return;
+        seen[l.height] = true;
+        var el = document.createElement('span');
+        el.textContent = l.height + 'p';
+        (function(levelIndex, elem) {
+          elem.addEventListener('click', function(e) {
+            e.stopPropagation();
+            hls.currentLevel = levelIndex;  // تثبيت الجودة
+            setActive(elem);
+            menu.classList.remove('wasla-open');
+          });
+        })(l.index, el);
+        menu.appendChild(el);
+      });
+
+    // إخفاء الزر لو جودة واحدة بس
+    qWrap.style.display = (menu.querySelectorAll('span').length > 2) ? '' : 'none';
+  }
+
+  buildItems();
+
+  // تحديث القائمة لو تغيرت المستويات لاحقًا
+  hls.on(Hls.Events.LEVEL_LOADED, function() {
+    if (hls.levels.length !== menu.querySelectorAll('span').length - 1) {
+      buildItems();
+    }
+  });
+}
+
 /* startStream - المشغّل الموحد */
 function startStream(videoId, src, clearkey) {
   var video = document.getElementById(videoId);
   var isDash = src.indexOf('.mpd') !== -1;
 
   if (isDash && typeof shaka !== 'undefined') {
+    // ---- MPD / Shaka ----
     waslaPlayer(videoId, {
       layoutControls: { autoPlay: false, allowTheatre: true, fillToContainer: true }
     });
@@ -111,13 +204,41 @@ function startStream(videoId, src, clearkey) {
     }).catch(function(e) { console.error('[WaslaPlayer] Shaka error:', e); });
 
   } else {
-    var source = document.createElement('source');
-    source.src = src;
-    source.type = 'application/x-mpegURL';
-    video.appendChild(source);
+    // ---- HLS (m3u8) ----
+    // نبدّأ waslaPlayer للـ UI فقط (بدون source element لمنع تضارب مع HLS داخلي)
     waslaPlayer(videoId, {
-      layoutControls: { autoPlay: true, allowTheatre: true, fillToContainer: true }
+      layoutControls: { autoPlay: false, allowTheatre: true, fillToContainer: true }
     });
-    buildQualityMenu(videoId, null);
+
+    function initHlsDirect() {
+      if (!Hls.isSupported()) {
+        // Fallback للمتصفحات اللي بتدعم HLS أصلاً (Safari)
+        video.src = src;
+        video.play().catch(function() {});
+        return;
+      }
+      var hls = new Hls({ startLevel: -1 });  // startLevel: -1 = تلقائي
+      hls.loadSource(src);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        buildQualityMenuHls(videoId, hls);
+        video.play().catch(function() {});
+      });
+      hls.on(Hls.Events.ERROR, function(event, data) {
+        if (data.fatal) {
+          console.error('[WaslaPlayer] HLS fatal error:', data.type, data.details);
+        }
+      });
+    }
+
+    if (typeof Hls !== 'undefined') {
+      initHlsDirect();
+    } else {
+      // تحميل hls.js لو لم يكن محملاً
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+      script.onload = initHlsDirect;
+      document.head.appendChild(script);
+    }
   }
 }
