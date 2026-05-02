@@ -26,11 +26,7 @@
 .wasla_video_wrapper { position:relative; display:inline-block; }
 .wasla_video_wrapper video { cursor:pointer!important; position:relative; background-color:#000; display:block; }
 
-#hls-video_wasla_controls_container {
-  color:#fff; position:absolute; bottom:0; left:0; right:0;
-  background:none;
-  height:58px; z-index:1;
-}
+#hls-video_wasla_controls_container { position: absolute; bottom: 5px; left: 0; right: 0; height: 80px; z-index: 1; direction: ltr; display: flex; align-items: center; padding: 0 20px; }
 
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_controls_progress_container { display:none; }
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_controls_progress_container .wasla_controls_progress { background-color:red; }
@@ -72,24 +68,8 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
 .wasla_controls_container .wasla_button:hover { background:rgba(0,0,0,.5); }
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_button:hover:before { opacity:1!important; }
 
-.wasla_controls_left {
-  position:absolute;
-  left:10px; top:0; bottom:0;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  height:100%;
-  direction:ltr;
-}
-.wasla_controls_right {
-  position:absolute;
-  right:10px; top:0; bottom:0;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  height:100%;
-  direction:ltr;
-}
+.wasla_controls_left { position: relative; left: 10px; top: 0; bottom: 0; display: inline-flex; align-items: center; gap: 15px; height: 100%; margin-right: auto; }
+.wasla_controls_right { display: inline-flex; align-items: center; gap: 15px; height: 100%; }
 
 
 #hls-video_wasla_control_mute { position:relative; }
@@ -105,6 +85,7 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
   transition:background .2s, padding .25s, border-radius .25s;
   padding:0;
   height:32px;
+  gap:10px;
 }
 .wasla_volume_group:hover,
 .wasla_volume_group.vol_open {
