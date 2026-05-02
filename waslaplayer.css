@@ -10,6 +10,7 @@
   --wasla-icon-download: "\f019";
   --wasla-icon-speed:    "\f04e";
   --wasla-icon-quality:  "\f013";
+  --wasla-volume-color:   var(--wasla-icon-color, rgba(247,246,247,.85));
   --wasla-logo-url:      'https://4.bp.blogspot.com/-NOkqQpyK-8w/XkLuSobE_OI/AAAAAAAAF4Y/rqLMz3e_sywkYIld3WotIyO7oBN89Ii9QCLcBGAsYHQ/s320-rw/playerlogo2020.webp';
   --wasla-logo-click:    'https://www.3rbcafee.com';
   --wasla-logo-top:      8px;
@@ -78,8 +79,8 @@ div#hls-video_fluid_timeline_preview { font-size:0; }
 
 #hls-video_fluid_control_volume_container { height:24px; width:56px; left:25px; top:-1px; z-index:2; opacity:.8; transition:opacity .3s ease-in-out; position:absolute; }
 #hls-video_fluid_control_volume { position:relative; height:3px; width:100%; margin-top:10px; background-color:rgba(171,172,172,.68); z-index:3; }
-#hls-video_fluid_control_currentvolume { float:left; background-color:#fff; height:3px; }
-#hls-video_fluid_control_volume_currentpos { width:11px; height:11px; position:absolute; top:-4px; border-radius:6px; background-color:#fff; }
+#hls-video_fluid_control_currentvolume { float:left; background-color:var(--wasla-volume-color); height:3px; }
+#hls-video_fluid_control_volume_currentpos { width:11px; height:11px; position:absolute; top:-4px; border-radius:6px; background-color:var(--wasla-volume-color); }
 div#hls-video_fluid_control_mute { left:-10px; position:absolute; }
 
 div#hls-video_fluid_control_fullscreen { float:right; position:relative; }
