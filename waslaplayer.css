@@ -147,27 +147,8 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
 div#hls-video_wasla_control_video_source { display:none!important; }
 [id$="_wasla_control_theatre"] { display:none!important; }
 
-#hls-video_wasla_control_duration {
-  display:inline-flex; align-items:center; gap:5px;
-  position:absolute; left:90px; top:50%; transform:translateY(-50%);
-  background:rgba(177,32,37,.88); border-radius:5px;
-  padding:3px 8px; font-size:0;
-  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
-  border:1px solid rgba(255,80,80,.35);
-}
-#hls-video_wasla_control_duration::before {
-  content:'';
-  width:7px; height:7px; min-width:7px;
-  border-radius:50%; background:#fff;
-  display:inline-block;
-  animation:waslalive 1.4s ease-in-out infinite;
-}
-#hls-video_wasla_control_duration::after {
-  content:'مباشر';
-  font-size:11px; color:#fff;
-  font-family:tahoma,Roboto,Arial,sans-serif;
-  font-weight:600; letter-spacing:.4px;
-}
+#hls-video_wasla_control_duration {display:none;}
+
 @keyframes waslalive {
   0%,100% { opacity:1; }
   50%      { opacity:.3; }
