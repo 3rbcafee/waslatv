@@ -28,8 +28,7 @@
 
 #hls-video_wasla_controls_container {
   color:#fff; position:absolute; bottom:0; left:0; right:0;
-  background:linear-gradient(to bottom,rgba(0,0,0,.12) 0%,rgba(255,255,255,.1) 100%);
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000',endColorstr='#ad000000',GradientType=0);
+  background:none;
   height:58px; z-index:1;
 }
 
@@ -78,17 +77,18 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
   left:10px; top:0; bottom:0;
   display:inline-flex;
   align-items:center;
-  gap:6px;
+  gap:8px;
   height:100%;
+  direction:ltr;
 }
 .wasla_controls_right {
   position:absolute;
   right:10px; top:0; bottom:0;
   display:inline-flex;
   align-items:center;
-  flex-direction:row-reverse;
-  gap:6px;
+  gap:8px;
   height:100%;
+  direction:ltr;
 }
 
 
@@ -97,11 +97,12 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
 .wasla_volume_group {
   display:inline-flex;
   align-items:center;
+  direction:ltr;
   border-radius:8px;
   background:rgba(0,0,0,.28);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
-  transition:background .2s, padding .25s;
+  transition:background .2s, padding .25s, border-radius .25s;
   padding:0;
   height:32px;
 }
