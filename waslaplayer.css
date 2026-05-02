@@ -98,8 +98,8 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
 }
 #hls-video_wasla_control_volume {
   position:relative;
-  width:70px;
-  min-width:70px;
+  width:80px;
+  min-width:80px;
   height:3px;
   background:rgba(255,255,255,.25);
   border-radius:2px;
