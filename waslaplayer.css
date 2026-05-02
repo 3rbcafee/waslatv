@@ -35,10 +35,10 @@
 
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_controls_progress_container { display:none; }
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_controls_progress_container .wasla_controls_progress { background-color:red; }
-div#hls-video_wasla_controls_progress_container { display:block; position:absolute; width:100%; bottom:58px; height:2px; background-color:#b12025; }
+div#hls-video_wasla_controls_progress_container { display:none!important; }
 div#hls-video_wasla_timeline_preview { font-size:0; }
 
-.wasla_controls_container .wasla_button { width:24px; user-select:none; }
+.wasla_controls_container .wasla_button { width:24px; user-select:none; margin-left:4px; }
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_button,
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_slider { cursor:pointer; }
 
@@ -88,8 +88,31 @@ div#hls-video_wasla_control_fullscreen { float:right; position:relative; }
 div#hls-video_wasla_control_video_source { display:none!important; }
 [id$="_wasla_control_theatre"] { display:none!important; }
 
-#hls-video_wasla_control_duration { display:inline-block; position:absolute; left:95px; width:6px; height:6px; border-radius:3.5px; background-color:#ff0101; margin-top:7px; font-size:0; }
-#hls-video_wasla_control_duration:before { content:'مباشر'!important; right:-10px; font-size:12px; font-family:Roboto,Arial,sans-serif; margin-top:-7px; position:absolute; }
+#hls-video_wasla_control_duration {
+  display:inline-flex; align-items:center; gap:5px;
+  position:absolute; left:90px; top:50%; transform:translateY(-50%);
+  background:rgba(177,32,37,.88); border-radius:5px;
+  padding:3px 8px; font-size:0;
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  border:1px solid rgba(255,80,80,.35);
+}
+#hls-video_wasla_control_duration::before {
+  content:'';
+  width:7px; height:7px; min-width:7px;
+  border-radius:50%; background:#fff;
+  display:inline-block;
+  animation:waslalive 1.4s ease-in-out infinite;
+}
+#hls-video_wasla_control_duration::after {
+  content:'مباشر';
+  font-size:11px; color:#fff;
+  font-family:tahoma,Roboto,Arial,sans-serif;
+  font-weight:600; letter-spacing:.4px;
+}
+@keyframes waslalive {
+  0%,100% { opacity:1; }
+  50%      { opacity:.3; }
+}
 
 .wasla_initial_play {
   display:inline-flex; align-items:center; gap:10px;
