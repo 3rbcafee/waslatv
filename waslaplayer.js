@@ -9,6 +9,23 @@ var waslaPlayerScriptLocation=function(){var e,t,i="";return document.currentScr
    WaslaPlayer - Quality Menu & Stream Launcher
    ============================================================ */
 
+/* safePlay - تشغيل آمن بدون كراش لو المتصفح بلوك الـ autoplay */
+function safePlay(video) {
+  try {
+    var p = video.play();
+    if (p !== undefined && p && typeof p.catch === 'function') {
+      p.catch(function(e) {
+        // AbortError طبيعي لو المستخدم لسه مش تفاعل مع الصفحة
+        if (e && e.name !== 'AbortError') {
+          console.warn('[WaslaPlayer] Autoplay blocked:', e.message || e);
+        }
+      });
+    }
+  } catch(e) {
+    console.warn('[WaslaPlayer] play() error:', e);
+  }
+}
+
 function buildQualityMenu(videoId, shakaPlayer) {
   var wrapper = document.getElementById('fluid_video_wrapper_' + videoId);
   if (!wrapper) return;
@@ -206,7 +223,8 @@ function startStream(videoId, src, clearkey) {
       layoutControls: { autoPlay: false, allowTheatre: true, fillToContainer: true }
     });
     shaka.polyfill.installAll();
-    var shakaInst = new shaka.Player(video);
+    var shakaInst = new shaka.Player();
+    shakaInst.attach(video);
     if (clearkey) {
       var parts = clearkey.split(':');
       var keys = {};
@@ -215,7 +233,7 @@ function startStream(videoId, src, clearkey) {
     }
     shakaInst.load(src).then(function() {
       buildQualityMenu(videoId, shakaInst);
-      video.play().catch(function() {});
+      safePlay(video);
     }).catch(function(e) { console.error('[WaslaPlayer] Shaka error:', e); });
 
   } else {
@@ -229,7 +247,7 @@ function startStream(videoId, src, clearkey) {
       if (!Hls.isSupported()) {
         // Fallback للمتصفحات اللي بتدعم HLS أصلاً زي Safari
         video.src = src;
-        video.play().catch(function() {});
+        safePlay(video);
         return;
       }
       var hls = new Hls({ startLevel: -1, debug: false });
@@ -237,7 +255,7 @@ function startStream(videoId, src, clearkey) {
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
         buildQualityMenuHls(videoId, hls);
-        video.play().catch(function() {});
+        safePlay(video);
       });
       hls.on(Hls.Events.ERROR, function(event, data) {
         if (data.fatal) {
