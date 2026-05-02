@@ -65,7 +65,7 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
   opacity:.85; transition:opacity .3s ease-in-out;
 }
 
-.wasla_controls_container .wasla_button:hover { background:rgba(0,0,0,.5); }
+.wasla_controls_container .wasla_button:hover { background:rgb(255 255 255 / 20%); }
 .wasla_video_wrapper.wasla_player_layout_default .wasla_controls_container .wasla_button:hover:before { opacity:1!important; }
 
 .wasla_controls_left { position: relative; left: 10px; top: 0; bottom: 0; display: inline-flex; align-items: center; gap: 15px; height: 100%; margin-right: auto; }
@@ -74,7 +74,7 @@ div#hls-video_wasla_timeline_preview { font-size:0; }
 
 #hls-video_wasla_control_mute { position:relative; }
 .wasla_volume_group { display: inline-flex; align-items: center; border-radius: 10px; background: rgb(255 255 255 / 10%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: background .2s, padding .25s, border-radius .25s; padding: 0; height: 50px; gap: 5px; }
-.wasla_volume_group:hover, .wasla_volume_group.vol_open { background: rgb(255 255 255 / 10%); border-radius: 10px; padding: 0 10px 0 0; }
+.wasla_volume_group:hover, .wasla_volume_group.vol_open { background: rgb(255 255 255 / 20%); border-radius: 10px; padding: 0 10px 0 0; }
 #hls-video_wasla_control_mute {
   background:transparent!important;
   backdrop-filter:none!important;
@@ -206,7 +206,7 @@ div#hls-video_wasla_control_video_source { display:none!important; }
 .wasla-quality-wrapper { position:relative; display:inline-flex; align-items:center; flex-shrink:0; }
 .wasla-quality-btn { width: 50px; height: 50px; cursor: pointer; user-select: none; position: relative; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgb(255 255 255 / 10%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: background .2s; }
 .wasla-quality-btn::before { content:var(--wasla-icon-quality,"\f013"); font-family:"Font Awesome 6 Free","Font Awesome 5 Free"; font-weight:900; font-size:var(--wasla-icon-size,15px); color:var(--wasla-icon-color,rgba(247,246,247,.85)); opacity:.85; transition:opacity .3s; display:block; }
-.wasla-quality-btn:hover { background:rgba(0,0,0,.5); border-radius:20px; }
+.wasla-quality-btn:hover { background:rgba(255,255,255,20%);}
 .wasla-quality-btn:hover::before { opacity:1; }
 .wasla-quality-menu { display:none; flex-direction:column; position:absolute; bottom:30px; right:-10px; z-index:100; background:rgba(0,0,0,.9); border-radius:4px; overflow:hidden; min-width:80px; box-shadow:0 2px 10px rgba(0,0,0,.6); }
 .wasla-quality-menu.wasla-open { display:flex; }
