@@ -208,12 +208,11 @@ div#hls-video_wasla_control_video_source { display:none!important; }
 .wasla-quality-btn::before { content:var(--wasla-icon-quality,"\f013"); font-family:"Font Awesome 6 Free","Font Awesome 5 Free"; font-weight:900; font-size:var(--wasla-icon-size,15px); color:var(--wasla-icon-color,rgba(247,246,247,.85)); opacity:.85; transition:opacity .3s; display:block; }
 .wasla-quality-btn:hover { background:rgba(255,255,255,20%);}
 .wasla-quality-btn:hover::before { opacity:1; }
-.wasla-quality-menu { display:none; flex-direction:column; position:absolute; bottom:30px; right:-10px; z-index:100; background:rgba(0,0,0,.9); border-radius:4px; overflow:hidden; min-width:80px; box-shadow:0 2px 10px rgba(0,0,0,.6); }
+.wasla-quality-menu { display: none; flex-direction: column; position: absolute; bottom: 60px; left: -50%; z-index: 100; overflow: hidden; min-width: 100px; }
 .wasla-quality-menu.wasla-open { display:flex; }
-.wasla-quality-menu span { color:rgba(247,246,247,.85); padding:7px 14px; cursor:pointer; font-size:13px; font-family:tahoma,Roboto,Arial,sans-serif; white-space:nowrap; text-align:center; transition:background .2s; }
-.wasla-quality-menu span:hover { background:rgba(255,255,255,.15); color:#fff; }
-.wasla-quality-menu span.wasla-active { color:#fff; font-weight:600; background:rgba(177,32,37,.4); }
-.wasla-quality-menu span:first-child { border-bottom:1px solid rgba(255,255,255,.1); }
+.wasla-quality-menu span { color: rgba(247, 246, 247, .85); background: rgba(255, 255, 255, 10%); backdrop-filter: blur(10px); padding: 5px 10px; cursor: pointer; font-size: 15px; white-space: nowrap; text-align: center; transition: background .2s; margin: 5px 0; border-radius: 9px; }
+.wasla-quality-menu span:hover { background:rgba(255,255,255,20%); }
+.wasla-quality-menu span.wasla-active { color: #333; font-weight: 600; background: var(--wasla-icon-color); }
 
 
 .fp_logo.fade_out,.fp_logo.initial_controls_show.fade_out {
